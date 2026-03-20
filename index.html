@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ГрандФлорт">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Сертификат | Гранд Флорт</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c3e2f, #1a2a1c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Playfair Display', serif;
+            padding: 20px;
+        }
+
+        .certificate-container {
+            position: relative;
+            width: 800px;
+            max-width: 95vw;
+            height: 600px;
+            max-height: 80vh;
+            background: #faf3e0;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: #f9efdc;
+            background-image: radial-gradient(circle at 20% 30%, rgba(210,180,140,0.15) 2%, transparent 2.5%);
+            background-size: 24px 24px;
+            transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #5a3e2b;
+            font-weight: bold;
+        }
+
+        .flap.left {
+            left: 0;
+            border-radius: 28px 0 0 28px;
+            transform-origin: left center;
+        }
+
+        .flap.right {
+            right: 0;
+            border-radius: 0 28px 28px 0;
+            transform-origin: right center;
+        }
+
+        .certificate-container.open .flap.left {
+            transform: translateX(-100%) rotateY(-10deg);
+        }
+        .certificate-container.open .flap.right {
+            transform: translateX(100%) rotateY(10deg);
+        }
+
+        .certificate-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fffef7;
+            padding: 25px 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+            z-index: 1;
+            overflow-y: auto;
+            border-radius: 28px;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .certificate-container.open .certificate-content {
+            opacity: 1;
+        }
+
+        .certificate-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #b67e3a;
+            text-align: center;
+            border-bottom: 2px solid #e2cba4;
+            display: inline-block;
+            width: auto;
+            margin: 0 auto 15px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1rem;
+            color: #5a3e2b;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            background: #fef3e0;
+            padding: 20px;
+            border-radius: 24px;
+            margin: 15px 0;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #4a2f1a;
+            font-size: 0.9rem;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2cba4;
+            border-radius: 30px;
+            font-size: 1rem;
+            background: #fff;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #b67e3a;
+            box-shadow: 0 0 0 2px rgba(182,126,58,0.2);
+        }
+
+        button {
+            background: #b67e3a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #9a622c;
+            transform: scale(1.02);
+        }
+
+        .certificate-display {
+            margin-top: 20px;
+            background: #fff;
+            border: 2px solid #e2cba4;
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .certificate-display p {
+            margin: 12px 0;
+            font-size: 1rem;
+        }
+
+        .certificate-display .service-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #b67e3a;
+            margin: 15px 0;
+        }
+
+        .share-link {
+            margin-top: 20px;
+            background: #e9e0cf;
+            padding: 12px;
+            border-radius: 30px;
+            word-break: break-all;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .copy-btn {
+            background: #6b4c2c;
+            margin-top: 10px;
+            width: auto;
+            padding: 8px 20px;
+        }
+
+        .edit-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.8rem;
+        }
+
+        .edit-link a {
+            color: #b67e3a;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .flap .logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .flap h3 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        .flap p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 700px) {
+            .certificate-container {
+                height: 650px;
+            }
+            .certificate-content {
+                padding: 20px;
+            }
+            .certificate-content h1 {
+                font-size: 1.6rem;
+            }
+            .flap h3 {
+                font-size: 1.2rem;
+            }
+            .flap .logo {
+                font-size: 2.5rem;
+            }
+            button {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="certificate-container" id="certContainer">
+    <div class="flap left">
+        <div class="logo">🎁</div>
+        <h3>Гранд Флорт</h3>
+        <p>Спа-салон</p>
+        <p style="margin-top: 15px; font-size: 0.8rem;">нажмите, чтобы открыть</p>
+    </div>
+    <div class="flap right">
+        <div class="logo">💆‍♀️</div>
+        <h3>Сертификат</h3>
+        <p>подарок на любой случай</p>
+    </div>
+
+    <div class="certificate-content" id="certContent"></div>
+</div>
+
+<script>
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            service: params.get('service') || '',
+            expiry: params.get('expiry') || ''
+        };
+    }
+
+    function updateURL(params) {
+        const url = new URL(window.location.href);
+        Object.keys(params).forEach(key => {
+            if (params[key]) url.searchParams.set(key, params[key]);
+            else url.searchParams.delete(key);
+        });
+        window.history.pushState({}, '', url);
+    }
+
+    function renderForm() {
+        const container = document.getElementById('certContent');
+        container.innerHTML = `
+            <div style="text-align: center;">
+                <h1>Гранд Флорт</h1>
+                <div class="subtitle">Создайте подарочный сертификат</div>
+            </div>
+            <div class="details">
+                <div class="form-group">
+                    <label>💆‍♀️ Наименование услуги / комплекса</label>
+                    <input type="text" id="serviceName" placeholder="Плотницкий массаж, SPA-программа и т.д." value="Плотницкий массаж">
+                </div>
+                <div class="form-group">
+                    <label>📅 Срок действия</label>
+                    <input type="text" id="expiryDate" placeholder="например, 31.12.2026">
+                </div>
+                <button id="generateBtn">✨ Создать сертификат и получить ссылку ✨</button>
+            </div>
+        `;
+
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const service = document.getElementById('serviceName').value.trim();
+            const expiry = document.getElementById('expiryDate').value.trim();
+
+            if (!service) {
+                alert('Пожалуйста, укажите наименование услуги или комплекса');
+                return;
+            }
+
+            const params = { service, expiry };
+            updateURL(params);
+            window.location.reload();
+        });
+    }
+
+    function renderCertificate(params) {
+        const { service, expiry } = params;
+        const container = document.getElementById('certContent');
+        container.innerHTML = `
+            <div style="text-align: center;">
+                <h1>Гранд Флорт</h1>
+                <div class="subtitle">Спа-салон</div>
+            </div>
+            <div id="certificateDisplay" class="certificate-display" style="display: block;">
+                <p>🎉 Подарочный сертификат 🎉</p>
+                <div class="service-name">${escapeHtml(service)}</div>
+                ${expiry ? `<p>⏳ Действителен до: <strong>${escapeHtml(expiry)}</strong></p>` : ''}
+                <p style="margin-top: 20px;">С уважением,<br>команда «Гранд Флорт»</p>
+            </div>
+            <div class="edit-link">
+                <a id="editLink">✏️ Редактировать данные</a>
+            </div>
+            <div class="share-link" id="shareLink">
+                <strong>🔗 Ссылка для клиента:</strong><br>
+                <span id="shareUrl"></span><br>
+                <button id="copyBtn" class="copy-btn">📋 Скопировать ссылку</button>
+            </div>
+        `;
+
+        const currentUrl = window.location.href;
+        const shareDiv = document.getElementById('shareLink');
+        const shareUrlSpan = document.getElementById('shareUrl');
+        shareUrlSpan.innerText = currentUrl;
+        shareDiv.style.display = 'block';
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            navigator.clipboard.writeText(currentUrl).then(() => {
+                alert('Ссылка скопирована! Отправьте её клиенту.');
+            }).catch(() => {
+                alert('Не удалось скопировать. Скопируйте ссылку вручную.');
+            });
+        });
+
+        document.getElementById('editLink').addEventListener('click', () => {
+            window.location.href = window.location.pathname;
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    const params = getQueryParams();
+    if (params.service) {
+        renderCertificate(params);
+    } else {
+        renderForm();
+        const container = document.getElementById('certContainer');
+        if (container.classList.contains('open')) container.classList.remove('open');
+    }
+
+    const container = document.getElementById('certContainer');
+    container.addEventListener('click', function(e) {
+        if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.share-link')) {
+            e.stopPropagation();
+            return;
+        }
+        if (!container.classList.contains('open')) {
+            container.classList.add('open');
+        }
+    });
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW registered', reg))
+      .catch(err => console.error('SW error', err));
+  }
+</script>
+</body>
+</html>
